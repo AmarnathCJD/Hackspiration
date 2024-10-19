@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Team Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <style>
+        body {
+            background-color: #000000;
+            color: #e5e5e5;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .neon-text {
+            color: #FF00FF;
+            text-shadow: 0 0 10px #FF00FF;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-top: 20px;
+            text-align: left;
+            color: #00FFFF;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .feedback-container,
+        .rating-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #212c3b;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
+
+        }
+
+        .feedback-container:hover,
+        .rating-container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+
+        .star {
+            font-size: 24px;
+            cursor: pointer;
+            color: #d3d3d3;
+            transition: color 0.3s;
+        }
+
+        .star:hover,
+        .star.selected {
+            color: #FF00FF;
+        }
+
+        button:hover {
+            transform: scale(1.01);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px 0;
+            text-align: center;
+            color: #e5e5e5;
+            background-color: #1f2937;
+            border-top: 1px solid #00FFFF;
+        }
+
+        footer a {
+            color: #00FFFF;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .above-particle-js-container-with-background {
+            padding: 24px;
+            border-radius: 16px;
+            background: #131721;
+            border-bottom: 1px solid #000;
+            opacity: 0.9;
+           
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
+
+<body class="p-8 relative flex flex-col items-center justify-center">
+    <div id="particles-js"></div>
+    <div class="above-particle-js-container-with-background px-8">
+        <div class="text-left relative z-10">
+            <h1 class="text-5xl neon-text mb-4 animate__fadeInUp">Hackspiration Team</h1>
+            <h3 class="text-2xl animate__fadeInUp font-semibold">Currently Presenting Team</h3>
+        </div>
+
+        <div class="mt-8 relative z-10">
+            <div class="animate__fadeInLeft">
+                <h2 class="section-title">Team Name</h2>
+                <p class="text-white font-bold text-lg mt-2" id="team-name">😙</p>
+
+                <h3 class="section-title mt-8">Team Idea</h3>
+                <p class="text-white font-bold text-lg mt-2" id="team-idea">😉😉😉</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ev = new EventSource('/team-sse');
+        ev.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            document.getElementById('team-name').innerText = data.team_name;
+            document.getElementById('team-idea').innerText = data.team_idea;
+        };
+
+        fetch('/get-active-team')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('team-name').innerText = data.team_name || 'Loading...';
+                document.getElementById('team-idea').innerText = data.team_idea || 'No idea provided';
+            });
+
+    </script>
+
+    <div class="above-particle-js-container-with-background mt-12 animate__fadeInUp">
+        <h2 class="section-title">Feedback</h2>
+        <p class="text-white mt-4 font-semibold">Feedback is a crucial part of the development process. It helps us
+            understand what we
+            did well and what we can improve. Your insights will be invaluable in making our project even better!</p>
+        <div class="mt-4">
+            <p class="text-white">Overall Team Performance</p>
+            <div class="flex justify-start items-center mt-2 space-x-2">
+                <i class="star fas fa-star" data-rating="1"></i>
+                <i class="star fas fa-star" data-rating="2"></i>
+                <i class="star fas fa-star" data-rating="3"></i>
+                <i class="star fas fa-star" data-rating="4"></i>
+                <i class="star fas fa-star" data-rating="5"></i>
+            </div>
+        </div>
+
+        <div class="feedback-form-container mt-12 animate__fadeInUp">
+            <div class="mt-6">
+                <label class="text-white" for="name">Name (Optional):</label>
+                <input type="text" id="name" name="name"
+                    class="mt-2 mb-4 p-2 w-full rounded-lg bg-gray-800 border border-gray-600 text-white" required>
+
+                <label class="text-white" for="feedback">Feedback:</label>
+                <textarea id="feedback" name="feedback" rows="4"
+                    class="mt-2 mb-4 p-2 w-full rounded-lg bg-gray-800 border border-gray-600 text-white"
+                    required></textarea>
+
+                <button type="submit" onclick="submitFeedback()"
+                    class="mt-4 p-3 w-full bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 hover:bg-gradient-to-l text-white rounded-lg transition-all">Submit
+                    Feedback</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stars = document.querySelectorAll('.star');
+        let rating = 0.0;
+
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                rating = this.getAttribute('data-rating');
+                const parent = this.parentNode;
+                const siblings = parent.querySelectorAll('.star');
+                siblings.forEach(sibling => {
+                    sibling.classList.remove('selected');
+                });
+
+                for (let i = 0; i < rating; i++) {
+                    siblings[i].classList.add('selected');
+                }
+            });
+        });
+
+        function submitFeedback() {
+            const name = document.getElementById('name').value;
+            const feedback = document.getElementById('feedback').value;
+            const teamName = document.getElementById('team-name').innerText;
+
+            if (!feedback) {
+                alert('Please fill in all fields and provide a rating!');
+                return;
+            }
+
+            fetch('/vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sender: name,
+                    feedback,
+                    rating: parseFloat(rating),
+                    teamName
+                })
+            }).then(response => {
+                if (response.ok) {
+                    Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    }).fire({
+                        icon: 'success',
+                        title: 'Feedback submitted successfully!'
+                    });
+                    document.getElementById('name').value = '';
+                    document.getElementById('feedback').value = '';
+                    rating = 0.0;
+                    stars.forEach(star => star.classList.remove('selected'));
+                } else {
+                    if (response.text === "You have already voted for this team") {
+                        Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer);
+                                toast.addEventListener('mouseleave', Swal.resumeTimer);
+                            }
+                        }).fire({
+                            icon: 'error',
+                            title: 'Duplicate Vote!!!'
+                        });
+                    } else {
+                        Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer);
+                                toast.addEventListener('mouseleave', Swal.resumeTimer);
+                            }
+                        }).fire({
+                            icon: 'error',
+                            title: 'Oops... An error occurred while submitting feedback. Please try again later.'
+                        });
+                    }
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'An error occurred while submitting feedback. Please try again later.'
+                });
+            });
+        }
+
+
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 90,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#00FFFF"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#fff000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    },
+                    "image": {
+                        "src": "img/github.svg",
+                        "width": 100,
+                        "height": 100
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": true,
+                    "attract": {
+                        "enable": true,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+</body>
+
+</html>
